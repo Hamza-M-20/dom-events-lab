@@ -1,21 +1,36 @@
 
-const numbers = document.querySelectorAll('.button.numbers');
+const numberButton = document.querySelector('.numbers');
+const equalsButton = document.querySelector('.equals');
+const operatorButton = document.querySelectorAll('.operator');
+const calculator = document.querySelector('#calculator');
 const display = document.querySelector('.display');
-const equals = document.querySelector('.button.equals');
-const operator = document.querySelectorAll('.button.operator');
+const button = document.querySelectorAll('.button');
+
 
 let firstNumber = null;
 let secondNumber = null;
+let Operator = null;
+let result = null;
 
-numbers.forEach((number) => {
+
+
+
+numberButton.forEach((number) => {
     number.addEventListener("click", handleNumberclick);
 });
 
-equals.addEventListener("click", handleEqualsclick);
+//equals.addEventListener("click", function() {});
 
-operator.forEach((operator) => {
-    operator.addEventListener("click", handleOperatorclick);
+
+
+operatorButton.forEach((operator) => {
+operator.addEventListener("click", handleOperatorclick);
 });
+calculator.addEventListener('click', (event) => {
+    console.log(event.target.innerText);
+  
+  });
+  
 
 function handleNumberclick(event)  {
     if (firstNumber) {
@@ -29,21 +44,22 @@ function handleNumberclick(event)  {
 };
 
 function handleOperatorclick(event) {
-    operator = event.target.textContent;
+    Operator = event.target.textContent;
+    display.innerHTML = `${firstNumber} ${operator}`;
     console.log("my operator is", event.target.textContent);
 
 };
 function handleEqualsclick(event) {
-    if (operator === "+") {
+    if (Operator === "+") {
         result = firstNumber + secondNumber;
         console.log("i'm going to add");
-    } else if (operator === "-") {
+    } else if (Operator === "-") {
         result = firstNumber - secondNumber;
         console.log("i'm going to subtract");
-    } else if (operator === "*") {
+    } else if (Operator === "*") {
         result = firstNumber * secondNumber;
         console.log("i'm going to multiply");
-    } else if (operator === "/") {
+    } else if (Operator === "/") {
         result = firstNumber / secondNumber;
         console.log("i'm going to divide");
     } else {
