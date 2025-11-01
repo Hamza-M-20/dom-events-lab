@@ -1,5 +1,5 @@
 
-const numberButton = document.querySelector('.numbers');
+const numberButtons = document.querySelectorAll('.number');
 const equalsButton = document.querySelector('.equals');
 const operatorButton = document.querySelectorAll('.operator');
 const calculator = document.querySelector('#calculator');
@@ -10,16 +10,17 @@ const button = document.querySelectorAll('.button');
 let firstNumber = null;
 let secondNumber = null;
 let Operator = null;
-let result = null;
+let currentValue = '0';
+let waitingForSecondNumber = false;
 
 
 
 
-numberButton.forEach((number) => {
+numberButtons.forEach((number) => {
     number.addEventListener("click", handleNumberclick);
 });
 
-//equals.addEventListener("click", function() {});
+equalsButton.addEventListener("click", handleEqualsclick);
 
 
 
@@ -27,29 +28,69 @@ operatorButton.forEach((operator) => {
 operator.addEventListener("click", handleOperatorclick);
 });
 calculator.addEventListener('click', (event) => {
-    console.log(event.target.innerText);
-  
-  });
+    // Handle clear button
+    if (event.target.textContent === 'C') {
+        handleClear();
+    }
+});
   
 
 function handleNumberclick(event)  {
-    if (firstNumber) {
-        display.innerHTML = `${firstNumber} ${operator} ${event.target.textContent}`
-        secondNumber = parseInt(event.target.textContent);
+    const number = event.target.textContent;
+    
+    if (waitingForSecondNumber) {
+        currentValue = number;
+        waitingForSecondNumber = false;
     } else {
-        display.innerHTML = event.target.textContent
-        firstNumber = parseInt(event.target.textContent);
+        currentValue = currentValue === '0' ? number : currentValue + number;
     }
-    console.log("i clicked on", event.target.textContent);
+    
+    display.innerHTML = currentValue;
+    
+    if (Operator === null) {
+        firstNumber = parseFloat(currentValue);
+    } else {
+        secondNumber = parseFloat(currentValue);
+    }
+    
+    console.log("i clicked on", number);
 };
 
 function handleOperatorclick(event) {
-    Operator = event.target.textContent;
-    display.innerHTML = `${firstNumber} ${operator}`;
-    console.log("my operator is", event.target.textContent);
-
+    const inputOperator = event.target.textContent;
+    
+  
+    if (inputOperator === 'C') {
+        return;
+    }
+    
+   
+    if (firstNumber !== null && Operator !== null && !waitingForSecondNumber) {
+        calculate();
+    }
+    
+    Operator = inputOperator;
+    waitingForSecondNumber = true;
+    if (firstNumber !== null) {
+        display.innerHTML = `${firstNumber} ${Operator}`;
+    }
+    console.log("my operator is", inputOperator);
 };
 function handleEqualsclick(event) {
+    if (Operator === null || secondNumber === null) {
+        return;
+    }
+    
+    calculate();
+}
+
+function calculate() {
+    if (Operator === null || secondNumber === null) {
+        return;
+    }
+    
+    let result;
+    
     if (Operator === "+") {
         result = firstNumber + secondNumber;
         console.log("i'm going to add");
@@ -62,10 +103,25 @@ function handleEqualsclick(event) {
     } else if (Operator === "/") {
         result = firstNumber / secondNumber;
         console.log("i'm going to divide");
-    } else {
-        console.log("i'm going to clear");
     }
+    
     display.innerHTML = result;
-       console.log("Result", result);
-    }
-    console.log("time to calculate");
+    console.log("Result", result);
+    
+   
+    firstNumber = result;
+    secondNumber = null;
+    Operator = null;
+    currentValue = result.toString();
+    waitingForSecondNumber = true;
+}
+
+function handleClear() {
+    firstNumber = null;
+    secondNumber = null;
+    Operator = null;
+    currentValue = '0';
+    waitingForSecondNumber = false;
+    display.innerHTML = '0';
+    console.log("cleared");
+}
